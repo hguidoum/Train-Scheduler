@@ -1,110 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Train Scheduler</title>
-
+    <meta charset="UTF-8" />
+    <title>Train Schedule</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=BioRhyme"
+      rel="stylesheet"
+    />
+    <!-- Materialize -->
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css"
     />
-
     <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
   </head>
 
   <body>
     <div class="container">
-      <div class="jumbotron" style="background-color: black; color: white">
-        <h1 class="text-center">Anytime is Train Time</h1>
-        <h3 class="text-center">Choo Choo. Chee Chee.</h3>
-      </div>
-
       <div class="row">
-        <div class="col-md-12">
-          <div class="card mb-4">
-            <div class="card-header">Current Train Schedule</div>
-            <div class="card-body">
-              <table class="table table-sm table-hover" id="train-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Train Name</th>
-                    <th scope="col">Destination</th>
-                    <th scope="col">Frequency (min)</th>
-                    <th scope="col">Next Arrival</th>
-                    <th scope="col">Minutes Away</th>
-                  </tr>
-                </thead>
-
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
+        <div class="card-panel z-depth-2 orange accent-3 white-text">
+          <h3 class="center-align">Train Schedule</h3>
         </div>
       </div>
-
       <div class="row">
-        <div class="col-md-12">
-          <div class="card mb-4">
-            <div class="card-header">Add Train</div>
-            <div class="card-body">
-              <form>
-                <div class="form-group">
-                  <label for="train-name-input">Train Name</label>
-                  <input
-                    class="form-control"
-                    id="train-name-input"
-                    placeholder=""
-                    type="text"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="destination-input">Destination</label>
-                  <input
-                    class="form-control"
-                    id="destination-input"
-                    placeholder=""
-                    type="text"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="start-train-input"
-                    >First Train Time (Military Time)</label
-                  >
-                  <input
-                    class="form-control"
-                    id="start-train-input"
-                    placeholder=""
-                    type="text"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="frequency-rate-input">Frequency (min)</label>
-                  <input
-                    class="form-control"
-                    id="frequency-rate-input"
-                    placeholder="60"
-                    type="text"
-                  />
-                </div>
-                <button class="btn btn-primary float-right" id="add-train-btn">
-                  Submit
-                </button>
-              </form>
+        <!-- Display Panel -->
+        <div class="card-panel trainInfo">
+          <h4 class="center-align">Current Train Schedule</h4>
+          <table
+            class="table striped center bordered responsive-table"
+            id="trainTable"
+          >
+            <thead>
+              <tr>
+                <th>Train Name</th>
+                <th>Destination</th>
+                <th>Frequency (minutes)</th>
+                <th>Next Arrival</th>
+                <th>Minutes Away</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Info Submission Panel -->
+      <div class="row">
+        <div class="card-panel">
+          <h4 class="center-align">Add Your Train</h4>
+          <form>
+            <div class="input-field col s12">
+              <input type="text" class="validate" id="trainNameInput" />
+              <label for="">Train Name</label>
             </div>
-          </div>
+            <div class="input-field col s12">
+              <input type="text" class="validate" id="destinationInput" />
+              <label for="">Destination</label>
+            </div>
+            <div class="input-field col s12">
+              <input type="time" class="validate" id="firstInput" />
+              <label class="active" for=""
+                >First Train (HH:mm Military Time)</label
+              >
+            </div>
+            <div class="input-field col s12">
+              <input type="number" class="validate" id="frequencyInput" />
+              <label for="">Frequency (minutes)</label>
+            </div>
+            <button type="submit" class="btn orange accent-3" id="addTrainBtn">
+              Submit
+            </button>
+          </form>
         </div>
       </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-    <!-- Firebase Reference -->
-    <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase.js"></script>
-
-    <!-- Moment.js Reference -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-
-    <script src="logic.js"></script>
+    <script type="text/javascript" src="logic.js"></script>
   </body>
 </html>

@@ -11,79 +11,94 @@ var config = {
 
 firebase.initializeApp(config);
 
-// Variable for Firebase DataBase
 var database = firebase.database();
+var currentTime = moment();
 
-// Button for adding Train to Schedule
-$("#add-train-btn").on("click", function(e) {
-  e.preventDefault();
+database.ref().on("child_added", function(childSnap) {
+  var name = childSnap.val().name;
+  var destination = childSnap.val().destination;
+  var firstTrain = childSnap.val().firstTrain;
+  var frequency = childSnap.val().frequency;
+  var min = childSnap.val().min;
+  var next = childSnap.val().next;
 
-  var trainName = $("#train-name-input")
-      .val()
-      .trim(),
-    destination = $("#destination-input")
-      .val()
-      .trim(),
-    startTrain = moment(
-      $("#start-train-input")
-        .val()
-        .trim(),
-      "HH:mm"
-    ).format("HH:mm");
-  (frequency = $("#frequency-rate-input")
+  $("#trainTable > tbody").append(
+    "<tr><td>" +
+      name +
+      "</td><td>" +
+      destination +
+      "</td><td>" +
+      frequency +
+      "</td><td>" +
+      next +
+      "</td><td>" +
+      min +
+      "</td></tr>"
+  );
+});
+
+database.ref().on("value", function(snapshot) {});
+
+//grabs information from the form
+$("#addTrainBtn").on("click", function() {
+  var trainName = $("#trainNameInput")
     .val()
-    .trim()),
-    // Train Object for adding to DB easier
-    (newTrain = {
-      name: trainName,
-      destination: destination,
-      firstTrain: startTrain,
-      frequency: frequency
-    });
+    .trim();
+  var destination = $("#destinationInput")
+    .val()
+    .trim();
+  var firstTrain = $("#firstInput")
+    .val()
+    .trim();
+  var frequency = $("#frequencyInput")
+    .val()
+    .trim();
 
-  // Push New Train Information to the DB
+  //ensures that each input has a value
+  if (trainName == "") {
+    alert("Enter a train name.");
+    return false;
+  }
+  if (destination == "") {
+    alert("Enter a destination.");
+    return false;
+  }
+  if (firstTrain == "") {
+    alert("Enter a first train time.");
+    return false;
+  }
+  if (frequency == "") {
+    alert("Enter a frequency");
+    return false;
+  }
+
+  // THE MATH!
+  //subtracts the first train time back a year to ensure it's before current time.
+  var firstTrainConverted = moment(firstTrain, "hh:mm").subtract("1, years");
+  // the time difference between current time and the first train
+  var difference = currentTime.diff(moment(firstTrainConverted), "minutes");
+  var remainder = difference % frequency;
+  var minUntilTrain = frequency - remainder;
+  var nextTrain = moment()
+    .add(minUntilTrain, "minutes")
+    .format("hh:mm a");
+
+  var newTrain = {
+    name: trainName,
+    destination: destination,
+    firstTrain: firstTrain,
+    frequency: frequency,
+    min: minUntilTrain,
+    next: nextTrain
+  };
+
+  console.log(newTrain);
   database.ref().push(newTrain);
 
-  // console.log(newTrain.name);
-  // console.log(newTrain.destination);
-  // console.log(newTrain.firstTrain);
-  // console.log(newTrain.frequency);
+  $("#trainNameInput").val("");
+  $("#destinationInput").val("");
+  $("#firstInput").val("");
+  $("#frequencyInput").val("");
 
-  // Clear Forms Input Values
-  $("#train-name-input").val("");
-  $("#destination-input").val("");
-  $("#start-train-input").val("");
-  $("#frequency-rate-input").val("");
-}); // End "Add Train" Function
-
-// After New Train is added, get New Train Info to display on page
-database.ref().on("child_added", function(childSnapShot) {
-  console.log(childSnapShot.val());
-
-  var trainName = childSnapShot.val().name,
-    destination = childSnapShot.val().destination,
-    startTrain = childSnapShot.val().firstTrain,
-    frequency = childSnapShot.val().frequency;
-
-  var convertedTime = moment(startTrain, "HH:mm").subtract(1, "years"),
-    diffTime = moment().diff(moment(convertedTime), "minutes"),
-    timeRemain = diffTime % frequency,
-    minAway = frequency - timeRemain,
-    nextTrain = moment()
-      .add(minAway, "minutes")
-      .format("HH:mm");
-  console.log(convertedTime);
-  console.log(diffTime);
-  console.log(timeRemain);
-  console.log(minAway);
-
-  var newRow = $("<tr>").append(
-    $("<td>").text(trainName),
-    $("<td>").text(destination),
-    $("<td>").text(frequency),
-    $("<td>").text(nextTrain),
-    $("<td>").text(minAway)
-  );
-
-  $("#train-table > tbody").append(newRow);
-}); // End New Train Info to Display on Page
+  return false;
+});
